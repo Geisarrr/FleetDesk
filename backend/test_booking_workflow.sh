@@ -2,9 +2,9 @@
 
 BASE_URL="http://127.0.0.1:8000/api"
 
-ADMIN_TOKEN="10|M8KuY6CqMYonqFFnXK9Z5vfx5G4xUuDm6qusfa4s935f9bff"
+ADMIN_TOKEN="1|KHxDqs1YbhkTEYDhqzzyXS7NoHBP1RCE1gOY8iLUab13c4ef"
 
-APPROVER_TOKEN="11|ciAVRhuYnH4gtO8TNUrsa6MJRxNfamsA4qWO8XLE3ec997ba"
+APPROVER_TOKEN="2|SOdPz7K4HOaBDjjXfYnptWEv63ycRwI3jhqktUmi251bf72d"
 
 
 # Generate tanggal random agar tidak bentrok
