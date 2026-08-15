@@ -1,0 +1,2 @@
+const details = [{ label: "Vehicle Type", value: "Heavy Transport Class B" }, { label: "Destination Route", value: "Sector 4 → Logistics Hub Alpha" }, { label: "Requested Duration", value: "48 Hours" }, { label: "Final Fleet Allocation", value: "Pending final dispatch assignment and telemetry sync." }];
+export default function RequestDetailCard() { return <section className="request-detail-card"><header><p>Request details</p></header><dl>{details.map((detail) => <div key={detail.label}><dt>{detail.label}</dt><dd>{detail.value}</dd></div>)}</dl></section>; }

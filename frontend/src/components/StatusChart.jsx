@@ -1,0 +1,5 @@
+import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
+const data = [{ name: "In use", value: 80, color: "#2563eb" }, { name: "Available", value: 15, color: "#06b6d4" }, { name: "Maintenance", value: 5, color: "#f59e0b" }];
+export default function StatusChart() {
+  return <article className="glass-card status-chart"><div className="card-heading"><div><p>Fleet status</p><h2>Status ratio</h2></div><button type="button">•••</button></div><div className="donut-wrap"><ResponsiveContainer width="100%" height={172}><PieChart><Pie data={data} dataKey="value" cx="50%" cy="50%" innerRadius={54} outerRadius={74} paddingAngle={3} stroke="none">{data.map((entry) => <Cell fill={entry.color} key={entry.name} />)}</Pie></PieChart></ResponsiveContainer><div className="donut-label"><strong>80%</strong><span>In use</span></div></div><div className="chart-legend">{data.map((item) => <span key={item.name}><i style={{ background: item.color }} />{item.name}<b>{item.value}%</b></span>)}</div></article>;
+}

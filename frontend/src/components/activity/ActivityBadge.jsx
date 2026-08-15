@@ -1,0 +1,1 @@
+const tones = { APPROVE_L1: "approved", MAINT_FLAG: "maintenance", CREATE_BOOKING: "created", AUTH_FAIL: "failure", UPDATE_ROUTE: "route" }; export default function ActivityBadge({ action }) { return <span className={`activity-badge ${tones[action]}`}><i />{action}</span>; }

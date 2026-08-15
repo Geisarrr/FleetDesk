@@ -1,0 +1,3 @@
+import VehicleRow from "./VehicleRow";
+const headers = [["Mon",24],["Tue",25],["Wed",26],["Thu",27],["Fri",28],["Sat",29],["Sun",30]];
+export default function CalendarGrid({ vehicles, selectedDate, onDateSelect, onEventSelect }) { return <div className="calendar-grid-scroll"><div className="calendar-grid"><div className="calendar-grid-header"><span>Vehicle Details</span>{headers.map(([day, date]) => <span key={day}>{day}<b>{date}</b></span>)}</div>{vehicles.map((vehicle) => <VehicleRow vehicle={vehicle} key={vehicle.name} selectedDate={selectedDate} onDateSelect={onDateSelect} onEventSelect={onEventSelect} />)}</div></div>; }

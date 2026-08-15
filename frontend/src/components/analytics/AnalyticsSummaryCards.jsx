@@ -1,0 +1,3 @@
+import { CalendarCheck2, CarFront, Clock3, Gauge } from "lucide-react";
+const cards = [{ label: "Total Bookings", value: "128", icon: CalendarCheck2, tone: "blue" }, { label: "Fleet Utilization", value: "78%", icon: Gauge, tone: "cyan" }, { label: "Active Vehicles", value: "24", icon: CarFront, tone: "green" }, { label: "Average Booking Duration", value: "4.5 Hours", icon: Clock3, tone: "violet" }];
+export default function AnalyticsSummaryCards() { return <section className="analytics-summary-cards">{cards.map(({ label, value, icon: Icon, tone }) => <article className={`analytics-summary analytics-summary--${tone}`} key={label}><span><Icon size={17} /></span><p>{label}</p><strong>{value}</strong></article>)}</section>; }

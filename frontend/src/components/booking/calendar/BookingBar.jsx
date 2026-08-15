@@ -1,0 +1,1 @@
+export default function BookingBar({ event, onClick }) { const duration = Math.max(1, event.endDay - event.startDay + 1); return <button type="button" title={event.title} onClick={onClick} className={`calendar-booking-bar ${event.type}`} style={{ gridColumn: `${event.startDay + 2} / span ${duration}` }}><i />{event.title}</button>; }

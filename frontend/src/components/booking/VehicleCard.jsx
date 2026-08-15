@@ -1,0 +1,6 @@
+import { BatteryCharging, Gauge, MapPinned, ShieldCheck } from "lucide-react";
+
+export default function VehicleCard({ vehicle, isSelected, onSelect }) {
+  const maintenance = vehicle.status === "IN MAINTENANCE";
+  return <article className={`dispatch-vehicle ${isSelected ? "is-selected" : ""} ${maintenance ? "is-maintenance" : ""}`}><button type="button" className="vehicle-card-button" onClick={onSelect} disabled={maintenance} aria-pressed={isSelected}><div className="vehicle-visual"><div className="vehicle-silhouette"><MapPinned size={34} /><span>{vehicle.code}</span></div><span className={`dispatch-status ${maintenance ? "maintenance" : "ready"}`}><i />{vehicle.status}</span></div><div className="dispatch-card-content"><div className="dispatch-title"><div><h3>{vehicle.name}</h3><span>{vehicle.type}</span></div><b>{vehicle.code}</b></div><div className="telemetry"><div><span><BatteryCharging size={13} /> Energy Cell</span><strong>{vehicle.energy}</strong></div><div><span><Gauge size={13} /> Est. Range</span><strong>{vehicle.range}</strong></div></div>{isSelected && <p className="asset-confirmation"><ShieldCheck size={13} /> Assigned to this request</p>}</div></button></article>;
+}

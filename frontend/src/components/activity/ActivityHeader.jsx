@@ -1,0 +1,1 @@
+export default function ActivityHeader() { return <section className="activity-header"><p>Security &amp; operational telemetry</p><h1>Activity Log</h1><span>Comprehensive audit trail of system events, user actions, and automated telemetry triggers.</span></section>; }

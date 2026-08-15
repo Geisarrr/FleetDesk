@@ -1,0 +1,1 @@
+export default function ApprovalStatusCard() { return <section className="approval-status-card"><header><p>Current status</p></header><div className="approval-current"><i /> <strong>L2 Approved</strong></div><dl><div><dt>Time elapsed</dt><dd>24h 48m</dd></div><div><dt>Priority level</dt><dd><span>High</span></dd></div></dl></section>; }

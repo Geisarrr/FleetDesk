@@ -1,0 +1,15 @@
+import { useEffect, useMemo, useState } from "react";
+import Sidebar from "../components/Sidebar";
+import TopNavbar from "../components/TopNavbar";
+import AnalyticsHeader from "../components/analytics/AnalyticsHeader";
+import ReportFilterPanel from "../components/analytics/ReportFilterPanel";
+import AnalyticsSummaryCards from "../components/analytics/AnalyticsSummaryCards";
+import FleetUtilizationTable from "../components/analytics/FleetUtilizationTable";
+import AnalyticsPagination from "../components/analytics/AnalyticsPagination";
+import AnalyticsDrawer from "../components/analytics/AnalyticsDrawer";
+import { getAnalyticsReport, getFleetUtilization } from "../services/analyticsService";
+import "../styles/dashboard.css";
+import "../styles/analytics.css";
+
+const defaults = { dateRange: "Last 30 Days", region: "All Regions", site: "All Sites", vehicle: "All Vehicles", driver: "All Drivers", status: "All Statuses", search: "" };
+export default function Analytics() { const [sidebarOpen, setSidebarOpen] = useState(false); const [filters, setFilters] = useState(defaults); const [report, setReport] = useState([]); const [utilization, setUtilization] = useState([]); const [selected, setSelected] = useState(null); const [page, setPage] = useState(1); useEffect(() => { getAnalyticsReport().then(setReport); getFleetUtilization().then(setUtilization); }, []); const filteredReport = useMemo(() => report.filter((row) => (filters.status === "All Statuses" || row.status === filters.status) && (filters.region === "All Regions" || row.region === filters.region) && (filters.site === "All Sites" || row.site === filters.site) && (filters.vehicle === "All Vehicles" || row.vehicle === filters.vehicle) && (filters.driver === "All Drivers" || row.driver === filters.driver) && Object.values(row).join(" ").toLowerCase().includes(filters.search.toLowerCase())), [filters, report]); return <div className="fleet-dashboard analytics-page"><Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} /><main className="dashboard-content analytics-content"><TopNavbar onMenuClick={() => setSidebarOpen(true)} searchPlaceholder="Search analytics..." /><AnalyticsHeader /><ReportFilterPanel filters={filters} onChange={(next) => { setFilters(next); setPage(1); }} /><AnalyticsSummaryCards /><section className="top-utilized"><header><div><p>Fleet intelligence</p><h2>Top Utilized Vehicles</h2></div><span>Current period</span></header><div>{utilization.map((vehicle) => <article key={vehicle.name}><div><strong>{vehicle.name}</strong><span>Fleet utilization</span></div><b>{vehicle.value}%</b><i><em style={{ width: `${vehicle.value}%` }} /></i></article>)}</div></section><section className="analytics-log"><header><div><p>Report registry</p><h2>Fleet Utilization Log</h2></div><span>{filteredReport.length} entries found</span></header><FleetUtilizationTable rows={filteredReport} onSelect={setSelected} /><AnalyticsPagination page={page} onPageChange={setPage} /></section></main><AnalyticsDrawer record={selected} onClose={() => setSelected(null)} /></div>; }
