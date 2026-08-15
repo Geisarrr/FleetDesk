@@ -12,27 +12,32 @@ class UpdateDriverRequest extends FormRequest
         return true;
     }
 
+
     public function rules(): array
     {
         return [
+
             'site_id' => [
-                'required',
+                'sometimes',
                 'exists:sites,id',
             ],
 
+
             'employee_id' => [
-                'required',
+                'sometimes',
                 'string',
                 'max:50',
                 Rule::unique('drivers', 'employee_id')
-                    ->ignore($this->driver),
+                    ->ignore($this->driver->id),
             ],
 
+
             'name' => [
-                'required',
+                'sometimes',
                 'string',
                 'max:100',
             ],
+
 
             'phone' => [
                 'nullable',
@@ -40,23 +45,27 @@ class UpdateDriverRequest extends FormRequest
                 'max:30',
             ],
 
+
             'license_number' => [
-                'required',
+                'sometimes',
                 'string',
                 'max:50',
                 Rule::unique('drivers', 'license_number')
-                    ->ignore($this->driver),
+                    ->ignore($this->driver->id),
             ],
 
+
             'license_expiry' => [
-                'required',
+                'sometimes',
                 'date',
             ],
 
+
             'status' => [
-                'required',
+                'sometimes',
                 'in:ACTIVE,INACTIVE',
             ],
+
         ];
     }
 }
