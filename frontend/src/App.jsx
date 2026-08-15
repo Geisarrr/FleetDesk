@@ -6,85 +6,223 @@ import {
 
 
 import Login from "./pages/login";
+
 import Dashboard from "./pages/Dashboard";
+
 import VehicleManagement from "./pages/VehicleManagement";
+
 import DriverManagement from "./pages/DriverManagement";
+
 import BookingManagement from "./pages/BookingManagement";
+
 import BookingMonitoring from "./pages/BookingMonitoring";
-import ApprovalHistory from "./pages/ApprovalHistory";
-import Analytics from "./pages/Analytics";
-import ActivityLog from "./pages/ActivityLog";
+
+import CreateBooking from "./pages/CreateBooking";
+
 import ApprovalDashboard from "./pages/ApprovalDashboard";
+
+import ApprovalHistory from "./pages/ApprovalHistory";
+
+import Analytics from "./pages/Analytics";
+
+import ActivityLog from "./pages/ActivityLog";
+
+
+import ProtectedRoute from "./components/ProtectedRoute";
+
 
 
 function App() {
 
-  return (
 
-    <BrowserRouter>
+return (
 
-      <Routes>
+<BrowserRouter>
 
-        <Route 
-          path="/"
-          element={<Login />}
-        />
 
-        <Route
-          path="/login"
-          element={<Login />}
-        />
+<Routes>
 
-        <Route
-          path="/dashboard"
-          element={<Dashboard />}
-        />
 
-        <Route
-          path="/fleet"
-          element={<VehicleManagement />}
-        />
 
-        <Route
-          path="/drivers"
-          element={<DriverManagement />}
-        />
+{/* =================
+    AUTH
+================= */}
 
-        <Route
-          path="/booking"
-          element={<BookingMonitoring />}
-        />
 
-        <Route
-          path="/booking/create"
-          element={<BookingManagement />}
-        />
+<Route
+path="/"
+element={<Login />}
+/>
 
-        <Route
-          path="/approval"
-          element={<ApprovalDashboard />}
-        />
 
-        <Route
-          path="/approval/history/:id"
-          element={<ApprovalHistory />}
-        />
+<Route
+path="/login"
+element={<Login />}
+/>
 
-        <Route
-          path="/analytics"
-          element={<Analytics />}
-        />
 
-        <Route
-          path="/system/activity-log"
-          element={<ActivityLog />}
-        />
 
-      </Routes>
 
-    </BrowserRouter>
 
-  );
+{/* =================
+    DASHBOARD
+================= */}
+
+
+<Route
+path="/dashboard"
+element={
+<ProtectedRoute>
+<Dashboard />
+</ProtectedRoute>
+}
+/>
+
+
+
+
+
+{/* =================
+    VEHICLE
+================= */}
+
+
+<Route
+path="/fleet"
+element={
+<ProtectedRoute>
+<VehicleManagement />
+</ProtectedRoute>
+}
+/>
+
+
+
+
+
+{/* =================
+    DRIVER
+================= */}
+
+
+<Route
+path="/drivers"
+element={
+<ProtectedRoute>
+<DriverManagement />
+</ProtectedRoute>
+}
+/>
+
+
+
+
+
+{/* =================
+    BOOKING
+================= */}
+
+
+<Route
+path="/booking"
+element={
+<ProtectedRoute>
+<BookingMonitoring />
+</ProtectedRoute>
+}
+/>
+
+
+<Route
+path="/booking/manage"
+element={
+<ProtectedRoute>
+<BookingManagement />
+</ProtectedRoute>
+}
+/>
+
+
+<Route
+path="/booking/create"
+element={
+<ProtectedRoute>
+<CreateBooking />
+</ProtectedRoute>
+}
+/>
+
+
+
+{/* =================
+    APPROVAL
+================= */}
+
+
+<Route
+path="/approval"
+element={
+<ProtectedRoute>
+<ApprovalDashboard />
+</ProtectedRoute>
+}
+/>
+
+
+
+<Route
+path="/approval/history/:id"
+element={
+<ProtectedRoute>
+<ApprovalHistory />
+</ProtectedRoute>
+}
+/>
+
+
+
+
+
+{/* =================
+    ANALYTICS
+================= */}
+
+
+<Route
+path="/analytics"
+element={
+<ProtectedRoute>
+<Analytics />
+</ProtectedRoute>
+}
+/>
+
+
+
+
+
+{/* =================
+    SYSTEM
+================= */}
+
+
+<Route
+path="/system/activity-log"
+element={
+<ProtectedRoute>
+<ActivityLog />
+</ProtectedRoute>
+}
+/>
+
+
+
+</Routes>
+
+
+</BrowserRouter>
+
+);
 
 }
 

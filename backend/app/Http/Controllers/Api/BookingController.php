@@ -254,4 +254,112 @@ class BookingController extends Controller
         ]);
     }
 
+    public function pendingApproval()
+    {
+
+        $bookings = Booking::with([
+            'requester',
+            'vehicle',
+            'driver',
+            'approvals'
+        ])
+        ->whereIn('status',[
+            'DRAFT',
+            'PENDING'
+        ])
+        ->get();
+
+
+        return response()->json([
+            'data'=>$bookings
+        ]);
+
+    }
+
+    public function approve(
+    string $id,
+    ActivityLogService $activityLogService
+    )
+    {
+
+        $booking = Booking::findOrFail($id);
+
+
+        $booking->update([
+
+            'status'=>'APPROVED'
+
+        ]);
+
+
+
+        $activityLogService->log(
+
+            'APPROVE',
+            'Booking',
+            $booking->id,
+            "Approve booking {$booking->booking_code}",
+
+            [
+                'status'=>$booking->status
+            ]
+
+        );
+
+
+        return response()->json([
+
+            'message'=>'Booking approved',
+
+            'data'=>$booking
+
+        ]);
+
+    }
+
+    public function reject(
+    string $id,
+    ActivityLogService $activityLogService
+    )
+    {
+
+
+        $booking = Booking::findOrFail($id);
+
+
+
+        $booking->update([
+
+        'status'=>'REJECTED'
+
+        ]);
+
+
+
+        $activityLogService->log(
+
+        'REJECT',
+        'Booking',
+        $booking->id,
+        "Reject booking {$booking->booking_code}",
+
+        [
+        'status'=>$booking->status
+        ]
+
+        );
+
+
+
+        return response()->json([
+
+        'message'=>'Booking rejected',
+
+        'data'=>$booking
+
+        ]);
+
+
+    }
+
 }

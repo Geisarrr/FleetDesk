@@ -1,6 +1,150 @@
-import { ChevronRight, Eye } from "lucide-react";
-import StatusBadge from "./StatusBadge";
+import { Eye } from "lucide-react";
 
-export default function BookingTable({ bookings, onSelectBooking }) {
-  return <div className="booking-table-scroll"><table className="booking-monitoring-table"><thead><tr><th>Booking ID</th><th>Requester</th><th>Vehicle / Driver</th><th>Destination / Date</th><th>Status</th><th>Approval</th><th><span className="sr-only">Action</span></th></tr></thead><tbody>{bookings.map((booking) => <tr key={booking.id} tabIndex="0" onClick={() => onSelectBooking(booking)} onKeyDown={(event) => event.key === "Enter" && onSelectBooking(booking)}><td className="monitoring-booking-id">{booking.id}</td><td><div className="booking-requester"><span>{booking.initial}</span><div><strong>{booking.requester}</strong><small>{booking.department}</small></div></div></td><td><div className="stacked-cell"><strong>{booking.vehicle}</strong><small>{booking.driver}</small></div></td><td><div className="stacked-cell"><strong>{booking.destination}</strong><small>{booking.date}</small></div></td><td><StatusBadge status={booking.status} /></td><td><span className="approval-label">{booking.approval}</span></td><td><button type="button" className="view-booking" aria-label={`View ${booking.id}`} onClick={(event) => { event.stopPropagation(); onSelectBooking(booking); }}><Eye size={15} /><ChevronRight size={13} /></button></td></tr>)}{bookings.length === 0 && <tr><td className="no-bookings" colSpan="7">No bookings in this view.</td></tr>}</tbody></table></div>;
+
+const statusClass = {
+    APPROVED:"approved",
+    PENDING:"pending",
+    REJECTED:"rejected"
+};
+
+
+export default function BookingTable({bookings}){
+
+
+return (
+
+<section className="booking-table-card">
+
+
+<div className="booking-scroll">
+
+
+<table className="booking-table">
+
+
+<thead>
+
+<tr>
+
+<th>Booking ID</th>
+
+<th>Requester</th>
+
+<th>Vehicle</th>
+
+<th>Driver</th>
+
+<th>Destination</th>
+
+<th>Date</th>
+
+<th>Status</th>
+
+<th>Action</th>
+
+
+</tr>
+
+
+</thead>
+
+
+
+<tbody>
+
+{
+bookings?.map((booking)=>(
+
+<tr key={booking.id}>
+
+<td>
+{booking.booking_code || "-"}
+</td>
+
+
+<td>
+{booking.requester?.name || "-"}
+</td>
+
+
+<td>
+{
+booking.vehicle
+?
+`${booking.vehicle.brand} ${booking.vehicle.model}`
+:
+"-"
+}
+</td>
+
+
+<td>
+{booking.driver?.name || "-"}
+</td>
+
+
+<td>
+{booking.destination || "-"}
+</td>
+
+
+<td>
+
+{
+booking.booking_date
+?
+new Date(
+booking.booking_date
+)
+.toLocaleDateString("en-GB")
+:
+"-"
+}
+
+</td>
+
+
+<td>
+
+<span className="booking-status">
+
+{booking.status}
+
+</span>
+
+</td>
+
+
+<td>
+
+<button className="view-booking">
+<Eye size={15}/>
+</button>
+
+</td>
+
+
+</tr>
+
+
+))
+
+}
+
+</tbody>
+
+
+
+</table>
+
+
+</div>
+
+
+
+</section>
+
+
+)
+
 }

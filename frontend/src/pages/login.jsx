@@ -22,28 +22,27 @@ const handleSubmit = async(e)=>{
 e.preventDefault();
 
 
-try{
+try {
+
+const response = await login(
+    email,
+    password
+);
 
 
-const response = await login({
-
-email,
-password
-
-});
+const userData = response.data;
 
 
 localStorage.setItem(
-"token",
-response.data.token
+    "token",
+    userData.token
 );
 
 
 localStorage.setItem(
-"user",
-JSON.stringify(response.data.user)
+    "user",
+    JSON.stringify(userData.user)
 );
-
 
 
 navigate("/dashboard");

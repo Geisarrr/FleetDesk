@@ -1,7 +1,14 @@
-export default function PendingApprovalCard({data}){
+export default function PendingApprovalCard({
+    data,
+    onAction
+}) {
 
 
-return(
+const booking = data.booking;
+
+
+
+return (
 
 <div className="approval-request">
 
@@ -12,110 +19,208 @@ return(
 <div>
 
 <h3>
-{data.name}
+{booking?.requester?.name || "-"}
 </h3>
 
+
 <p>
-{data.department}
+{booking?.booking_code || "-"}
 </p>
+
 
 </div>
 
 
+
 <span className="status">
-{data.status}
+{data.decision}
 </span>
 
 
 </div>
+
+
 
 
 
 <div className="request-info">
 
 
+
 <div>
+
 Vehicle
+
 <strong>
-{data.vehicle}
+
+{
+booking?.vehicle
+?
+`${booking.vehicle.brand} ${booking.vehicle.model}`
+:
+"-"
+}
+
 </strong>
+
 </div>
 
 
+
+
+
 <div>
+
 Driver
+
 <strong>
-{data.driver}
+
+{
+booking?.driver?.name || "-"
+}
+
 </strong>
+
 </div>
 
 
+
+
+
 <div>
+
 Destination
+
 <strong>
-{data.destination}
+
+{
+booking?.destination || "-"
+}
+
 </strong>
+
 </div>
+
+
+
 
 
 <div>
+
 Date
+
 <strong>
-{data.date}
+
+{
+booking?.booking_date
+?
+new Date(
+booking.booking_date
+).toLocaleDateString(
+"en-GB"
+)
+:
+"-"
+}
+
 </strong>
+
 </div>
 
 
+
 </div>
+
+
+
+
 
 
 
 <div className="purpose">
 
-{data.purpose}
+{
+booking?.purpose || "-"
+}
 
 </div>
+
+
+
+
+
 
 
 
 <div className="timeline">
 
 
+
 <span className="done">
+
 Created
+
 </span>
+
 
 
 <span className="active">
-Level 1
+
+Level {data.level}
+
 </span>
 
 
+
 <span>
+
 Level 2
+
 </span>
+
 
 
 <span>
+
 Approved
+
 </span>
+
 
 
 </div>
 
 
 
+
+
+
+
 <div className="approval-actions">
 
 
-<button className="approve">
+<button
+className="approve"
+onClick={()=>onAction(
+    "approve",
+    data.id
+)}
+>
 Approve
 </button>
 
 
-<button className="reject">
+
+<button
+className="reject"
+onClick={()=>onAction(
+    "reject",
+    data.id
+)}
+>
 Reject
 </button>
+
 
 
 <button>
@@ -127,7 +232,10 @@ Note
 
 
 
+
+
 </div>
+
 
 )
 

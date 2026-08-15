@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\BookingWorkflowController;
 use App\Http\Controllers\Api\BookingApprovalController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ApprovalController;
 
 
 
@@ -101,10 +102,32 @@ Route::middleware('auth:sanctum')->group(function () {
     */
 
 
+    Route::get(
+        '/approvals',
+        [ApprovalController::class,'index']
+    );
+
+
+
     Route::post(
         '/booking-approvals/{approval}/approve',
         [BookingApprovalController::class,'approve']
     );
 
+
+
+    Route::post(
+        '/booking-approvals/{approval}/reject',
+        [BookingApprovalController::class,'reject']
+    );
+
+
+   
+
+    Route::middleware('auth:sanctum')
+    ->get(
+    '/approvals',
+    [ApprovalController::class,'index']
+    );
 
 });

@@ -1,18 +1,265 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import Sidebar from "../components/Sidebar";
 import TopNavbar from "../components/TopNavbar";
-import BookingStepper from "../components/booking/BookingStepper";
-import MissionSummary from "../components/booking/MissionSummary";
-import GridStatus from "../components/booking/GridStatus";
-import VehicleSelector from "../components/booking/VehicleSelector";
-import VehicleCalendar from "../components/booking/calendar/VehicleCalendar";
+import BookingTable from "../components/booking/BookingTable";
+
 import "../styles/dashboard.css";
 import "../styles/booking.css";
 
-export default function BookingManagement() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [selectedVehicle, setSelectedVehicle] = useState("V-702");
-  const [selectedDate, setSelectedDate] = useState("2023-10-24");
+import {
+  getBookings
+} from "../services/bookingService";
 
-  return <div className="fleet-dashboard booking-page"><Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} /><main className="dashboard-content booking-content"><TopNavbar onMenuClick={() => setSidebarOpen(true)} /><section className="booking-header"><div><p className="booking-kicker">Dispatch workflow</p><h1>New Dispatch Request</h1><p>Configure mission parameters and assign operational assets for remote deployment.</p></div><div className="booking-header-actions"><button type="button" className="cancel-request">Cancel</button><button type="button" className="submit-request" disabled>Submit Request</button></div></section><BookingStepper /><section className="booking-layout"><aside className="booking-sidebar"><MissionSummary /><GridStatus /></aside><VehicleSelector selectedVehicle={selectedVehicle} onSelectVehicle={setSelectedVehicle} /></section><section className="availability-check"><header><div><p>Asset planning</p><h2>Vehicle Availability Check</h2></div><span>Selected date: {selectedDate}</span></header><VehicleCalendar selectedDate={selectedDate} onDateSelect={setSelectedDate} /></section></main></div>;
+
+export default function BookingManagement(){
+
+  const navigate = useNavigate();
+
+  const [sidebarOpen,setSidebarOpen] = useState(false);
+
+  const [bookings,setBookings] = useState([]);
+
+  const [loading,setLoading] = useState(true);
+
+  const [error,setError] = useState("");
+
+
+
+  useEffect(()=>{
+
+    loadBookings();
+
+  },[]);
+
+
+
+  async function loadBookings(){
+
+    try{
+
+      setLoading(true);
+
+      const data = await getBookings();
+
+      setBookings(data);
+
+
+    }catch(error){
+
+      console.error(error);
+
+      setError(
+        "Failed loading bookings"
+      );
+
+
+    }finally{
+
+      setLoading(false);
+
+    }
+
+  }
+
+
+
+  return (
+
+    <div className="fleet-dashboard">
+
+
+      <Sidebar
+        open={sidebarOpen}
+        onClose={()=>setSidebarOpen(false)}
+      />
+
+
+
+      <main className="dashboard-content">
+
+
+        <TopNavbar
+          onMenuClick={()=>setSidebarOpen(true)}
+        />
+
+
+
+        <section className="dashboard-intro">
+
+
+          <div>
+
+
+            <span className="eyebrow">
+              BOOKING CENTER
+            </span>
+
+
+
+            <h1>
+              Booking Management
+            </h1>
+
+
+
+            <p>
+              Manage fleet booking requests and workflow approvals.
+            </p>
+
+
+          </div>
+
+
+
+          <button
+            className="primary-action"
+            onClick={()=>
+              navigate("/booking/create")
+            }
+          >
+
+            + New Booking
+
+          </button>
+
+
+
+        </section>
+
+
+
+
+
+        <section className="stats-grid">
+
+
+          <article className="stat-card">
+
+            <p>Total Booking</p>
+
+            <strong>
+              {bookings.length}
+            </strong>
+
+          </article>
+
+
+
+
+
+          <article className="stat-card">
+
+            <p>Approved</p>
+
+            <strong>
+
+              {
+                bookings.filter(
+                  b=>b.status==="APPROVED"
+                ).length
+              }
+
+            </strong>
+
+          </article>
+
+
+
+
+
+          <article className="stat-card">
+
+            <p>Pending</p>
+
+            <strong>
+
+              {
+                bookings.filter(
+                  b=>b.status==="PENDING"
+                ).length
+              }
+
+            </strong>
+
+          </article>
+
+
+
+
+
+          <article className="stat-card">
+
+            <p>Rejected</p>
+
+            <strong>
+
+              {
+                bookings.filter(
+                  b=>b.status==="REJECTED"
+                ).length
+              }
+
+            </strong>
+
+          </article>
+
+
+        </section>
+
+
+
+
+
+        {
+          loading && (
+
+            <div className="glass-card">
+              Loading bookings...
+            </div>
+
+          )
+        }
+
+
+
+
+        {
+          error && (
+
+            <div className="glass-card error-box">
+
+              {error}
+
+            </div>
+
+          )
+        }
+
+
+
+
+
+        {
+          !loading && !error && (
+
+            <BookingTable
+              bookings={bookings}
+            />
+
+          )
+        }
+
+
+
+
+
+      </main>
+
+
+    </div>
+
+  );
+
 }

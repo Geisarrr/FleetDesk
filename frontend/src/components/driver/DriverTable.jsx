@@ -1,7 +1,418 @@
 import { Download, Filter, Pencil, Trash2 } from "lucide-react";
 
-const isExpired = (expiry) => new Date(`${expiry}T00:00:00`) < new Date();
 
-export default function DriverTable({ drivers, total }) {
-  return <section className="driver-table-card"><header className="driver-table-header"><div><p>Driver directory</p><h2>Fleet Operators</h2></div><div className="driver-tools"><button type="button" aria-label="Filter drivers"><Filter size={15} /></button><button type="button" aria-label="Download drivers"><Download size={15} /></button></div></header><div className="driver-table-scroll"><table className="driver-table"><thead><tr><th>Employee ID</th><th>Driver Name</th><th>Phone</th><th>License Number</th><th>License Expiry</th><th>Site</th><th>Status</th><th><span className="sr-only">Actions</span></th></tr></thead><tbody>{drivers.map((driver) => <tr key={driver.employeeId}><td className="driver-id">{driver.employeeId}</td><td><div className="driver-name"><span>{driver.initial}</span><strong>{driver.name}</strong></div></td><td>{driver.phone}</td><td>{driver.license}</td><td className={isExpired(driver.expiry) ? "expired-license" : ""}>{driver.expiry}</td><td>{driver.site}</td><td><span className={`driver-status ${driver.status.toLowerCase()}`}>{driver.status}</span></td><td><div className="driver-actions"><button type="button" aria-label={`Edit ${driver.name}`}><Pencil size={14} /></button><button className="delete-driver" type="button" aria-label={`Delete ${driver.name}`}><Trash2 size={14} /></button></div></td></tr>)}</tbody></table></div><footer className="driver-pagination"><span>Showing 1 to {drivers.length} of {total} drivers</span><nav aria-label="Driver pages"><button type="button">Prev</button><button className="current" type="button">1</button><button type="button">2</button><button type="button">3</button><span>...</span><button type="button">Next</button></nav></footer></section>;
+const isExpired = (expiry) => {
+
+    if(!expiry) return false;
+
+    return new Date(expiry) < new Date();
+
+};
+
+
+
+const getInitial = (name)=>{
+
+    if(!name) return "-";
+
+    return name
+    .split(" ")
+    .map(word=>word[0])
+    .join("")
+    .substring(0,2)
+    .toUpperCase();
+
+};
+
+
+
+export default function DriverTable({drivers,total}){
+
+
+return (
+
+
+<section className="driver-table-card">
+
+
+<header className="driver-table-header">
+
+
+<div>
+
+<p>
+Driver directory
+</p>
+
+<h2>
+Fleet Operators
+</h2>
+
+</div>
+
+
+
+<div className="driver-tools">
+
+
+<button type="button">
+
+<Filter size={15}/>
+
+</button>
+
+
+<button type="button">
+
+<Download size={15}/>
+
+</button>
+
+
+</div>
+
+
+</header>
+
+
+
+
+
+<div className="driver-table-scroll">
+
+
+<table className="driver-table">
+
+
+<thead>
+
+
+<tr>
+
+<th>
+Employee ID
+</th>
+
+
+<th>
+Driver Name
+</th>
+
+
+<th>
+Phone
+</th>
+
+
+<th>
+License Number
+</th>
+
+
+<th>
+License Expiry
+</th>
+
+
+<th>
+Site
+</th>
+
+
+<th>
+Status
+</th>
+
+
+<th>
+Action
+</th>
+
+
+</tr>
+
+
+</thead>
+
+
+
+<tbody>
+
+
+{
+drivers.map((driver)=>(
+
+
+<tr key={driver.id}>
+
+
+<td className="driver-id">
+
+{driver.employee_id}
+
+</td>
+
+
+
+
+<td>
+
+
+<div className="driver-name">
+
+
+<span>
+
+{
+getInitial(driver.name)
+}
+
+</span>
+
+
+<strong>
+
+{driver.name}
+
+</strong>
+
+
+</div>
+
+
+</td>
+
+
+
+
+<td>
+
+{driver.phone}
+
+</td>
+
+
+
+
+<td>
+
+{driver.license_number}
+
+</td>
+
+
+
+
+
+<td 
+className={
+isExpired(driver.license_expiry)
+?
+"expired-license"
+:
+""
+}
+>
+
+
+{
+new Date(driver.license_expiry)
+.toLocaleDateString("id-ID")
+}
+
+
+
+</td>
+
+
+
+
+
+<td>
+
+
+<div>
+
+{
+driver.site?.region?.name ?? "-"
+}
+
+
+</div>
+
+
+<small>
+
+{
+driver.site?.name ?? "-"
+}
+
+
+</small>
+
+
+</td>
+
+
+
+
+
+<td>
+
+
+<span 
+className={
+`driver-status ${driver.status.toLowerCase()}`
+}
+>
+
+
+{driver.status}
+
+
+</span>
+
+
+
+</td>
+
+
+
+
+
+
+<td>
+
+
+<div className="driver-actions">
+
+
+<button
+type="button"
+>
+
+<Pencil size={14}/>
+
+</button>
+
+
+
+<button
+type="button"
+className="delete-driver"
+>
+
+
+<Trash2 size={14}/>
+
+
+</button>
+
+
+</div>
+
+
+</td>
+
+
+
+
+</tr>
+
+
+
+))
+
+
+
+}
+
+
+
+
+{
+drivers.length===0 &&
+
+<tr>
+
+<td 
+colSpan="8"
+className="empty-drivers"
+>
+
+No drivers found.
+
+</td>
+
+</tr>
+
+}
+
+
+
+</tbody>
+
+
+</table>
+
+
+</div>
+
+
+
+
+
+<footer className="driver-pagination">
+
+
+<span>
+
+Showing {drivers.length} of {total ?? drivers.length} drivers
+
+</span>
+
+
+
+<nav>
+
+
+<button>
+Prev
+</button>
+
+
+<button className="current">
+1
+</button>
+
+
+<button>
+2
+</button>
+
+
+<button>
+3
+</button>
+
+
+<button>
+Next
+</button>
+
+
+</nav>
+
+
+
+</footer>
+
+
+
+
+</section>
+
+
+)
+
 }
