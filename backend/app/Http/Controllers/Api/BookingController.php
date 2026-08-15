@@ -7,6 +7,8 @@ use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
 use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
+use App\Services\BookingService;
+use App\Services\BookingCodeService;
 
 class BookingController extends Controller
 {
@@ -30,16 +32,33 @@ class BookingController extends Controller
 
 
 
-    public function store(StoreBookingRequest $request)
+    public function store(StoreBookingRequest $request,BookingService $bookingService,BookingCodeService $bookingCodeService)
     {
+        if (!$bookingService->checkVehicleAvailability(
+            $request->vehicle_id,
+            $request->booking_date,
+            $request->start_time,
+            $request->end_time
+        )) {
+            return response()->json([
+                'message' => 'Vehicle tidak tersedia pada waktu tersebut.'
+            ], 422);
+        }
+
+
+        if (!$bookingService->checkDriverAvailability(
+            $request->driver_id,
+            $request->booking_date,
+            $request->start_time,
+            $request->end_time
+        )) {
+            return response()->json([
+                'message' => 'Driver tidak tersedia pada waktu tersebut.'
+            ], 422);
+        }
         $booking = Booking::create([
 
-            'booking_code' => 'BOOK-' . str_pad(
-                Booking::count() + 1,
-                6,
-                '0',
-                STR_PAD_LEFT
-            ),
+            'booking_code' => $bookingCodeService->generate(),
 
             'requester_id' => Auth::id(),
 
