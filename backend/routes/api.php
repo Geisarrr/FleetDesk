@@ -2,46 +2,109 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\VehicleTypeController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\VehicleController;
 use App\Http\Controllers\Api\DriverController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\BookingWorkflowController;
 use App\Http\Controllers\Api\BookingApprovalController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
+
+
+/*
+|--------------------------------------------------------------------------
+| AUTH
+|--------------------------------------------------------------------------
+*/
 
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::post('/logout', [AuthController::class, 'logout'])
-    ->middleware('auth:sanctum');
 
-Route::post(
-    '/bookings/{booking}/submit',
-    [BookingWorkflowController::class, 'submit']
-);
 
-Route::middleware('auth:sanctum')
-->post(
-    '/booking-approvals/{approval}/approve',
-    [BookingApprovalController::class,'approve']
-);
+/*
+|--------------------------------------------------------------------------
+| PROTECTED ROUTES
+|--------------------------------------------------------------------------
+*/
 
-Route::get('/me', function (Request $request) {
-    return $request->user()->load('role');
-})->middleware('auth:sanctum');
+Route::middleware('auth:sanctum')->group(function () {
 
-Route::apiResource('vehicle-types', VehicleTypeController::class)
-    ->middleware(['auth:sanctum', 'role:Admin']);
 
-Route::apiResource('vehicles', VehicleController::class)
-    ->middleware(['auth:sanctum', 'role:Admin']);
 
-Route::apiResource('drivers', DriverController::class)
-    ->middleware(['auth:sanctum', 'role:Admin']);
+    /*
+    |--------------------------------------------------------------------------
+    | USER
+    |--------------------------------------------------------------------------
+    */
 
-Route::middleware(['auth:sanctum'])
-    ->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
 
-        Route::apiResource('bookings', BookingController::class);
+
+    Route::get('/me', function (Request $request) {
+
+        return $request->user()->load('role');
 
     });
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | MASTER DATA ADMIN
+    |--------------------------------------------------------------------------
+    */
+
+
+    Route::apiResource('vehicle-types', VehicleTypeController::class)
+        ->middleware('role:Admin');
+
+
+    Route::apiResource('vehicles', VehicleController::class)
+        ->middleware('role:Admin');
+
+
+    Route::apiResource('drivers', DriverController::class)
+        ->middleware('role:Admin');
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | BOOKINGS
+    |--------------------------------------------------------------------------
+    */
+
+
+    Route::apiResource('bookings', BookingController::class);
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | BOOKING WORKFLOW
+    |--------------------------------------------------------------------------
+    */
+
+
+    Route::post(
+        '/bookings/{booking}/submit',
+        [BookingWorkflowController::class,'submit']
+    );
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | APPROVAL
+    |--------------------------------------------------------------------------
+    */
+
+
+    Route::post(
+        '/booking-approvals/{approval}/approve',
+        [BookingApprovalController::class,'approve']
+    );
+
+
+});

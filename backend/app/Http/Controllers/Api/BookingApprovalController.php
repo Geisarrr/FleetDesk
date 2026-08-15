@@ -6,37 +6,49 @@ use App\Http\Controllers\Controller;
 use App\Models\BookingApproval;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Services\ActivityLogService;
+
 
 class BookingApprovalController extends Controller
 {
 
-    public function approve(BookingApproval $approval)
+    public function approve(
+        BookingApproval $approval,
+        ActivityLogService $activityLogService
+    )
     {
 
         if ($approval->decision !== 'Pending') {
 
             return response()->json([
-                'message' => 'Approval sudah diproses.'
-            ], 422);
+                'message'=>'Approval sudah diproses.'
+            ],422);
 
         }
 
 
         $bookingId = $approval->booking_id;
 
+        $logData = null;
 
-        DB::transaction(function () use ($approval, $bookingId) {
+
+        DB::transaction(function () use (
+            $approval,
+            $bookingId,
+            &$logData
+        ) {
 
 
             $approval = BookingApproval::lockForUpdate()
                 ->findOrFail($approval->id);
 
 
+
             $approval->update([
 
-                'decision' => 'Approved',
+                'decision'=>'Approved',
 
-                'decided_at' => Carbon::now(),
+                'decided_at'=>Carbon::now()
 
             ]);
 
@@ -46,13 +58,18 @@ class BookingApprovalController extends Controller
 
 
 
-            // Approval Level 1
+            /*
+             |--------------------------------------------------------------------------
+             | LEVEL 1 APPROVAL
+             |--------------------------------------------------------------------------
+             */
+
             if ($approval->level == 1) {
 
 
                 $booking->update([
 
-                    'status' => 'PENDING_LEVEL_2'
+                    'status'=>'PENDING_LEVEL_2'
 
                 ]);
 
@@ -60,34 +77,94 @@ class BookingApprovalController extends Controller
 
                 BookingApproval::create([
 
-                    'booking_id' => $booking->id,
+                    'booking_id'=>$booking->id,
 
-                    'approver_id' => auth()->id(),
+                    'approver_id'=>auth()->id(),
 
-                    'level' => 2,
+                    'level'=>2,
 
-                    'decision' => 'Pending'
+                    'decision'=>'Pending'
 
                 ]);
+
+
+
+                $logData = [
+
+                    'action'=>'APPROVE_LEVEL_1',
+
+                    'description'=>"Menyetujui level 1 booking {$booking->booking_code}",
+
+                    'metadata'=>[
+                        'status'=>$booking->status
+                    ]
+
+                ];
 
             }
 
 
 
-            // Approval Level 2
+            /*
+             |--------------------------------------------------------------------------
+             | LEVEL 2 APPROVAL
+             |--------------------------------------------------------------------------
+             */
+
             if ($approval->level == 2) {
 
 
                 $booking->update([
 
-                    'status' => 'APPROVED'
+                    'status'=>'APPROVED'
 
                 ]);
+
+
+
+                $logData = [
+
+                    'action'=>'APPROVE_LEVEL_2',
+
+                    'description'=>"Menyetujui level 2 booking {$booking->booking_code}",
+
+                    'metadata'=>[
+                        'status'=>$booking->status
+                    ]
+
+                ];
 
             }
 
 
         });
+
+
+
+        /*
+         |--------------------------------------------------------------------------
+         | ACTIVITY LOG AFTER COMMIT
+         |--------------------------------------------------------------------------
+         */
+
+
+        if ($logData) {
+
+            $activityLogService->log(
+
+                $logData['action'],
+
+                'Booking',
+
+                $bookingId,
+
+                $logData['description'],
+
+                $logData['metadata']
+
+            );
+
+        }
 
 
 
@@ -100,9 +177,9 @@ class BookingApprovalController extends Controller
 
         return response()->json([
 
-            'message' => 'Booking berhasil disetujui.',
+            'message'=>'Booking berhasil disetujui.',
 
-            'data' => $booking
+            'data'=>$booking
 
         ]);
 

@@ -9,6 +9,7 @@ use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
 use App\Services\BookingService;
 use App\Services\BookingCodeService;
+use App\Services\ActivityLogService;
 
 class BookingController extends Controller
 {
@@ -32,7 +33,12 @@ class BookingController extends Controller
 
 
 
-    public function store(StoreBookingRequest $request,BookingService $bookingService,BookingCodeService $bookingCodeService)
+    public function store(
+    StoreBookingRequest $request,
+    BookingService $bookingService,
+    BookingCodeService $bookingCodeService,
+    ActivityLogService $activityLogService
+    )
     {
         if (!$bookingService->checkVehicleAvailability(
             $request->vehicle_id,
@@ -85,6 +91,21 @@ class BookingController extends Controller
             'status' => 'DRAFT',
 
         ]);
+        $activityLogService->log(
+
+            'CREATE',
+
+            'Booking',
+
+            $booking->id,
+
+            "Membuat booking {$booking->booking_code}",
+
+            [
+                'status' => $booking->status
+            ]
+
+        );
 
 
         return response()->json([
@@ -123,7 +144,11 @@ class BookingController extends Controller
 
 
 
-    public function update(UpdateBookingRequest $request, string $id)
+    public function update(
+    UpdateBookingRequest $request,
+    string $id,
+    ActivityLogService $activityLogService
+    )
     {
         $booking = Booking::findOrFail($id);
 
@@ -159,6 +184,21 @@ class BookingController extends Controller
             'notes' => $request->notes ?? $booking->notes,
 
         ]);
+        $activityLogService->log(
+
+            'UPDATE',
+
+            'Booking',
+
+            $booking->id,
+
+            "Mengubah booking {$booking->booking_code}",
+
+            [
+                'status'=>$booking->status
+            ]
+
+        );
 
 
         return response()->json([
@@ -178,20 +218,34 @@ class BookingController extends Controller
 
 
 
-    public function destroy(string $id)
+    public function destroy(
+        string $id,
+        ActivityLogService $activityLogService
+    )
     {
         $booking = Booking::findOrFail($id);
 
 
-        /*
-         * Jangan delete record booking.
-         * Booking adalah histori operasional.
-         * Kita ubah status menjadi CANCELLED.
-         */
-
         $booking->update([
             'status' => 'CANCELLED'
         ]);
+
+
+        $activityLogService->log(
+
+            'CANCEL',
+
+            'Booking',
+
+            $booking->id,
+
+            "Membatalkan booking {$booking->booking_code}",
+
+            [
+                'status'=>$booking->status
+            ]
+
+        );
 
 
         return response()->json([
