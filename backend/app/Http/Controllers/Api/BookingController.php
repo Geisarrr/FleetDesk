@@ -1,0 +1,184 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreBookingRequest;
+use App\Http\Requests\UpdateBookingRequest;
+use App\Models\Booking;
+use Illuminate\Support\Facades\Auth;
+
+class BookingController extends Controller
+{
+
+    public function index()
+    {
+        $bookings = Booking::with([
+            'requester',
+            'region',
+            'site',
+            'vehicle',
+            'driver',
+            'approvals'
+        ])->get();
+
+
+        return response()->json([
+            'data' => $bookings
+        ]);
+    }
+
+
+
+    public function store(StoreBookingRequest $request)
+    {
+        $booking = Booking::create([
+
+            'booking_code' => 'BOOK-' . str_pad(
+                Booking::count() + 1,
+                6,
+                '0',
+                STR_PAD_LEFT
+            ),
+
+            'requester_id' => Auth::id(),
+
+            'region_id' => $request->region_id,
+
+            'site_id' => $request->site_id,
+
+            'vehicle_id' => $request->vehicle_id,
+
+            'driver_id' => $request->driver_id,
+
+            'booking_date' => $request->booking_date,
+
+            'start_time' => $request->start_time,
+
+            'end_time' => $request->end_time,
+
+            'destination' => $request->destination,
+
+            'purpose' => $request->purpose,
+
+            'notes' => $request->notes,
+
+            'status' => 'DRAFT',
+
+        ]);
+
+
+        return response()->json([
+            'message' => 'Booking berhasil dibuat.',
+            'data' => $booking->load([
+                'requester',
+                'region',
+                'site',
+                'vehicle',
+                'driver',
+                'approvals'
+            ])
+        ], 201);
+    }
+
+
+
+
+    public function show(string $id)
+    {
+        $booking = Booking::with([
+            'requester',
+            'region',
+            'site',
+            'vehicle',
+            'driver',
+            'approvals'
+        ])->findOrFail($id);
+
+
+        return response()->json([
+            'data' => $booking
+        ]);
+    }
+
+
+
+
+    public function update(UpdateBookingRequest $request, string $id)
+    {
+        $booking = Booking::findOrFail($id);
+
+
+        /*
+         * Untuk sementara hanya update data booking.
+         * Status workflow nanti dibuat terpisah:
+         * submit approval
+         * approve
+         * reject
+         */
+
+        $booking->update([
+
+            'region_id' => $request->region_id ?? $booking->region_id,
+
+            'site_id' => $request->site_id ?? $booking->site_id,
+
+            'vehicle_id' => $request->vehicle_id ?? $booking->vehicle_id,
+
+            'driver_id' => $request->driver_id ?? $booking->driver_id,
+
+            'booking_date' => $request->booking_date ?? $booking->booking_date,
+
+            'start_time' => $request->start_time ?? $booking->start_time,
+
+            'end_time' => $request->end_time ?? $booking->end_time,
+
+            'destination' => $request->destination ?? $booking->destination,
+
+            'purpose' => $request->purpose ?? $booking->purpose,
+
+            'notes' => $request->notes ?? $booking->notes,
+
+        ]);
+
+
+        return response()->json([
+            'message' => 'Booking berhasil diperbarui.',
+            'data' => $booking->load([
+                'requester',
+                'region',
+                'site',
+                'vehicle',
+                'driver',
+                'approvals'
+            ])
+        ]);
+    }
+
+
+
+
+
+    public function destroy(string $id)
+    {
+        $booking = Booking::findOrFail($id);
+
+
+        /*
+         * Jangan delete record booking.
+         * Booking adalah histori operasional.
+         * Kita ubah status menjadi CANCELLED.
+         */
+
+        $booking->update([
+            'status' => 'CANCELLED'
+        ]);
+
+
+        return response()->json([
+            'message' => 'Booking berhasil dibatalkan.',
+            'data' => $booking
+        ]);
+    }
+
+}
