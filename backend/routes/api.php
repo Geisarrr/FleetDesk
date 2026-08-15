@@ -7,11 +7,24 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\VehicleController;
 use App\Http\Controllers\Api\DriverController;
 use App\Http\Controllers\Api\BookingController;
+use App\Http\Controllers\Api\BookingWorkflowController;
+use App\Http\Controllers\Api\BookingApprovalController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth:sanctum');
+
+Route::post(
+    '/bookings/{booking}/submit',
+    [BookingWorkflowController::class, 'submit']
+);
+
+Route::middleware('auth:sanctum')
+->post(
+    '/booking-approvals/{approval}/approve',
+    [BookingApprovalController::class,'approve']
+);
 
 Route::get('/me', function (Request $request) {
     return $request->user()->load('role');
