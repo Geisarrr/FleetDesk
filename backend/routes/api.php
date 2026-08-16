@@ -10,7 +10,8 @@ use App\Http\Controllers\Api\BookingApprovalController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ApprovalController;
-
+use App\Http\Controllers\Api\ApprovalStatsController;
+use App\Http\Controllers\Api\DashboardController;
 
 
 /*
@@ -32,6 +33,10 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
 
 
+    Route::get(
+    '/approval-stats',
+    [ApprovalStatsController::class,'index']
+    );
 
     /*
     |--------------------------------------------------------------------------
@@ -128,6 +133,11 @@ Route::middleware('auth:sanctum')->group(function () {
     ->get(
     '/approvals',
     [ApprovalController::class,'index']
+    );
+
+    Route::get(
+    '/dashboard',
+    [DashboardController::class,'index']
     );
 
 });
