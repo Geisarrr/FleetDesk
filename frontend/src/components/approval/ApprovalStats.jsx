@@ -1,30 +1,83 @@
-const stats=[
+import {
+useEffect,
+useState
+} from "react";
+
+
+import {
+getApprovalStats
+} from "../../services/approvalService";
+
+
+
+export default function ApprovalStats(){
+
+
+const [stats,setStats]=useState({
+
+pending:0,
+approved:0,
+rejected:0,
+avgTime:"0h"
+
+});
+
+
+
+useEffect(()=>{
+
+loadStats();
+
+},[]);
+
+
+
+async function loadStats(){
+
+try{
+
+const data =
+await getApprovalStats();
+
+
+setStats(data);
+
+
+}catch(error){
+
+console.log(error);
+
+}
+
+}
+
+
+
+
+const cards=[
 
 {
 title:"Pending Approval",
-value:"12"
+value:stats.pending
 },
 
 {
-title:"Approved Today",
-value:"24"
+title:"Approved",
+value:stats.approved
 },
 
 {
 title:"Rejected",
-value:"3"
+value:stats.rejected
 },
 
 {
 title:"Avg Approval Time",
-value:"2.5h"
+value:stats.avgTime
 }
 
+];
 
-]
-
-
-export default function ApprovalStats(){
 
 
 return(
@@ -32,10 +85,12 @@ return(
 <div className="approval-stats">
 
 {
-stats.map(item=>(
+cards.map(item=>(
 
-<div className="approval-card" key={item.title}>
-
+<div
+className="approval-card"
+key={item.title}
+>
 
 <span>
 {item.title}
@@ -49,13 +104,11 @@ stats.map(item=>(
 
 </div>
 
-
 ))
 }
 
 </div>
 
-
-)
+);
 
 }

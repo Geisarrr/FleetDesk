@@ -1,5 +1,128 @@
-import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-const trendData = [{ day: "Mon", bookings: 68 }, { day: "Tue", bookings: 91 }, { day: "Wed", bookings: 74 }, { day: "Thu", bookings: 118 }, { day: "Fri", bookings: 105 }, { day: "Sat", bookings: 57 }, { day: "Sun", bookings: 42 }];
-export default function BookingTrend() {
-  return <article className="glass-card booking-trend"><div className="card-heading"><div><p>Weekly activity</p><h2>Booking trend</h2></div><div className="trend-total"><strong>555</strong><span>+12.5% <small>vs last week</small></span></div></div><div className="trend-chart"><ResponsiveContainer width="100%" height={235}><AreaChart data={trendData} margin={{ top: 10, right: 0, left: -25, bottom: 0 }}><defs><linearGradient id="bookingGradient" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#06b6d4" stopOpacity={0.36} /><stop offset="100%" stopColor="#06b6d4" stopOpacity={0} /></linearGradient></defs><XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: "#8ea2be", fontSize: 12 }} /><YAxis axisLine={false} tickLine={false} tick={{ fill: "#64748b", fontSize: 11 }} /><Tooltip contentStyle={{ background: "#0f1e35", border: "1px solid #29415f", borderRadius: "10px" }} /><Area type="monotone" dataKey="bookings" stroke="#22d3ee" strokeWidth={3} fill="url(#bookingGradient)" /></AreaChart></ResponsiveContainer></div></article>;
+export default function BookingTrend({
+    bookings=[]
+}) {
+
+
+const days = [
+    "Mon",
+    "Tue",
+    "Wed",
+    "Thu",
+    "Fri",
+    "Sat",
+    "Sun"
+];
+
+
+const values = [
+    0,0,0,0,0,0,0
+];
+
+
+
+bookings.forEach(item=>{
+
+const date =
+new Date(item.booking_date);
+
+
+let day =
+date.getDay();
+
+
+day =
+day === 0
+?
+6
+:
+day - 1;
+
+
+values[day]++;
+
+
+});
+
+
+
+const max =
+Math.max(...values,1);
+
+
+
+return (
+
+<article className="glass-card booking-trend">
+
+
+<div className="card-heading">
+
+<div>
+
+<p>
+Weekly activity
+</p>
+
+
+<h2>
+Booking trend
+</h2>
+
+
+</div>
+
+
+</div>
+
+
+
+
+<div className="chart-area">
+
+
+{
+values.map((value,index)=>(
+
+
+<div
+className="bar-item"
+key={days[index]}
+>
+
+
+<div
+className="bar"
+style={{
+height:
+`${(value/max)*120 + 20}px`
+}}
+>
+
+
+</div>
+
+
+<span>
+{days[index]}
+</span>
+
+
+</div>
+
+
+))
+
+
+}
+
+
+
+</div>
+
+
+</article>
+
+
+)
+
 }

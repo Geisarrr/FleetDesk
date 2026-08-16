@@ -1,10 +1,27 @@
 export default function PendingApprovalCard({
     data,
-    onAction
+    onApprove,
+    onReject
 }) {
 
 
 const booking = data.booking;
+
+
+
+function formatDate(date){
+
+    if(!date) return "-";
+
+
+    return new Date(
+        date.split("T")[0]
+    ).toLocaleDateString(
+        "en-GB"
+    );
+
+}
+
 
 
 
@@ -13,18 +30,23 @@ return (
 <div className="approval-request">
 
 
+
 <div className="request-top">
 
 
 <div>
 
 <h3>
+
 {booking?.requester?.name || "-"}
+
 </h3>
 
 
 <p>
+
 {booking?.booking_code || "-"}
+
 </p>
 
 
@@ -32,9 +54,14 @@ return (
 
 
 
-<span className="status">
+
+
+<span className={`status ${data.decision?.toLowerCase()}`}>
+
 {data.decision}
+
 </span>
+
 
 
 </div>
@@ -43,7 +70,12 @@ return (
 
 
 
+
+
+
 <div className="request-info">
+
+
 
 
 
@@ -55,15 +87,22 @@ Vehicle
 
 {
 booking?.vehicle
+
 ?
+
 `${booking.vehicle.brand} ${booking.vehicle.model}`
+
 :
+
 "-"
+
 }
 
 </strong>
 
 </div>
+
+
 
 
 
@@ -87,6 +126,8 @@ booking?.driver?.name || "-"
 
 
 
+
+
 <div>
 
 Destination
@@ -105,6 +146,8 @@ booking?.destination || "-"
 
 
 
+
+
 <div>
 
 Date
@@ -112,15 +155,10 @@ Date
 <strong>
 
 {
+formatDate(
 booking?.booking_date
-?
-new Date(
-booking.booking_date
-).toLocaleDateString(
-"en-GB"
 )
-:
-"-"
+
 }
 
 </strong>
@@ -129,7 +167,12 @@ booking.booking_date
 
 
 
+
+
+
 </div>
+
+
 
 
 
@@ -152,7 +195,10 @@ booking?.purpose || "-"
 
 
 
+
 <div className="timeline">
+
+
 
 
 
@@ -164,15 +210,43 @@ Created
 
 
 
-<span className="active">
 
-Level {data.level}
+
+
+
+<span
+className={
+data.level === 1
+?
+"active"
+:
+"done"
+}
+>
+
+Level 1
 
 </span>
 
 
 
-<span>
+
+
+
+
+<span
+className={
+data.level === 2
+?
+"active"
+:
+data.decision === "Approved"
+?
+"done"
+:
+""
+}
+>
 
 Level 2
 
@@ -180,7 +254,20 @@ Level 2
 
 
 
-<span>
+
+
+
+
+
+<span
+className={
+booking?.status === "APPROVED"
+?
+"done"
+:
+""
+}
+>
 
 Approved
 
@@ -188,7 +275,13 @@ Approved
 
 
 
+
+
+
+
 </div>
+
+
 
 
 
@@ -199,36 +292,58 @@ Approved
 <div className="approval-actions">
 
 
+
+
+
 <button
+
 className="approve"
-onClick={()=>onAction(
-    "approve",
-    data.id
-)}
+
+onClick={() =>
+onApprove &&
+onApprove(data.id)
+}
+
 >
+
 Approve
+
 </button>
+
+
+
+
 
 
 
 <button
+
 className="reject"
-onClick={()=>onAction(
-    "reject",
-    data.id
-)}
+
+onClick={() =>
+onReject &&
+onReject(data.id)
+}
+
 >
+
 Reject
+
 </button>
+
+
+
+
 
 
 
 <button>
+
 Note
+
 </button>
 
 
-</div>
 
 
 
@@ -236,6 +351,12 @@ Note
 
 </div>
 
+
+
+
+
+
+</div>
 
 )
 

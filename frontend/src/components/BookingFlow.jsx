@@ -1,66 +1,100 @@
-const flow = [{ label: "Pending", value: "142", color: "amber" }, { label: "Approved", value: "854", color: "cyan" }, { label: "Rejected", value: "21", color: "red" }];
-export default function BookingFlow() {
-  return (
-    <article className="glass-card booking-flow">
-
-      <div className="card-heading">
-        <div>
-          <p>Booking flow</p>
-          <h2>Approval status</h2>
-        </div>
-
-        <button type="button">
-          View all →
-        </button>
-      </div>
+export default function BookingFlow({
+    approval
+}){
 
 
-      <div className="flow-list">
+const flow=[
 
-        {flow.map((item)=>(
-          <div className="flow-item" key={item.label}>
-
-
-            <div className="flow-left">
-
-              <span 
-              className={`status-dot ${item.color}`}
-              />
-
-              <p>
-                {item.label}
-              </p>
-
-            </div>
+{
+label:"Pending",
+value:approval?.pending ?? 0
+},
 
 
-            <div className="flow-right">
-
-              <strong>
-                {item.value}
-              </strong>
-
-              <span>
-                {
-                  item.label === "Approved"
-                  ? "84%"
-                  :
-                  item.label === "Pending"
-                  ? "14%"
-                  :
-                  "2%"
-                }
-              </span>
+{
+label:"Approved",
+value:approval?.approved ?? 0
+},
 
 
-            </div>
+{
+label:"Rejected",
+value:approval?.rejected ?? 0
+}
 
 
-          </div>
-        ))}
+];
 
-      </div>
 
-    </article>
-  );
+
+return(
+
+<article className="glass-card booking-flow">
+
+
+<div className="card-heading">
+
+<div>
+
+<p>
+Booking flow
+</p>
+
+<h2>
+Approval status
+</h2>
+
+</div>
+
+
+<button>
+View all →
+</button>
+
+
+</div>
+
+
+
+<div className="flow-list">
+
+
+{
+flow.map(item=>(
+
+
+<div 
+className="flow-item"
+key={item.label}
+>
+
+
+<p>
+{item.label}
+</p>
+
+
+<strong>
+{item.value}
+</strong>
+
+
+</div>
+
+
+))
+
+}
+
+
+
+</div>
+
+
+</article>
+
+
+)
+
+
 }

@@ -14,6 +14,7 @@ import PendingApprovalCard from "../components/approval/PendingApprovalCard";
 import ApprovalActivity from "../components/approval/ApprovalActivity";
 
 
+
 import {
     getPendingApprovals,
     approveBooking,
@@ -46,6 +47,7 @@ const [error,setError]=useState(null);
 
 
 
+
 useEffect(()=>{
 
 loadApprovals();
@@ -56,12 +58,15 @@ loadApprovals();
 
 
 
+
+
 async function loadApprovals(){
+
 
 try{
 
 
-setLoading(true);
+setError(null);
 
 
 const data =
@@ -76,14 +81,19 @@ data
 
 
 
-setRequests(data);
+setRequests(
+data || []
+);
 
 
 
 }catch(error){
 
 
-console.log(error);
+console.log(
+"LOAD APPROVAL ERROR",
+error
+);
 
 
 
@@ -110,6 +120,8 @@ setLoading(false);
 
 
 
+
+
 async function handleApprovalAction(
 type,
 id
@@ -119,6 +131,7 @@ id
 try{
 
 
+
 if(type === "approve"){
 
 
@@ -126,6 +139,7 @@ await approveBooking(id);
 
 
 }
+
 
 
 
@@ -143,16 +157,19 @@ id,
 
 
 
-// refresh data setelah action
+// reload list setelah action berhasil
 
 await loadApprovals();
+
 
 
 
 }catch(error){
 
 
+
 console.log(
+"ACTION ERROR",
 error
 );
 
@@ -176,10 +193,14 @@ alert(
 
 
 
+
+
 return(
 
 
 <div className="fleet-dashboard">
+
+
 
 
 
@@ -197,7 +218,12 @@ onClose={
 
 
 
+
+
+
 <main className="dashboard-content">
+
+
 
 
 
@@ -219,11 +245,17 @@ searchPlaceholder="Search approvals..."
 
 
 
+
+
+
 <section className="approval-header">
 
 
 
+
+
 <div>
+
 
 
 <p className="eyebrow">
@@ -231,6 +263,8 @@ searchPlaceholder="Search approvals..."
 Approval Center
 
 </p>
+
+
 
 
 
@@ -244,6 +278,8 @@ Approval Dashboard
 
 
 
+
+
 <p>
 
 Review and manage pending fleet booking requests.
@@ -252,7 +288,11 @@ Review and manage pending fleet booking requests.
 
 
 
+
 </div>
+
+
+
 
 
 
@@ -267,7 +307,12 @@ Filter
 
 
 
+
 </section>
+
+
+
+
 
 
 
@@ -297,13 +342,19 @@ requests={requests}
 
 
 
+
+
 <div className="approval-main">
 
 
 
 
 
+
+
 <ApprovalFilters />
+
+
 
 
 
@@ -327,6 +378,7 @@ Loading approvals...
 
 
 
+
 {
 error &&
 
@@ -335,6 +387,7 @@ error &&
 </p>
 
 }
+
 
 
 
@@ -366,6 +419,7 @@ No pending approval
 
 
 {
+!loading &&
 
 requests.map(item=>(
 
@@ -373,21 +427,33 @@ requests.map(item=>(
 <PendingApprovalCard
 
 
-key={
-item.id
-}
+key={item.id}
 
 
 data={item}
 
 
 
-onAction={
-handleApprovalAction
+onApprove={(id)=>
+handleApprovalAction(
+"approve",
+id
+)
 }
 
 
+
+onReject={(id)=>
+handleApprovalAction(
+"reject",
+id
+)
+}
+
+
+
 />
+
 
 
 ))
@@ -401,7 +467,9 @@ handleApprovalAction
 
 
 
+
 </div>
+
 
 
 
@@ -418,7 +486,9 @@ handleApprovalAction
 
 
 
+
 </section>
+
 
 
 
@@ -432,10 +502,11 @@ handleApprovalAction
 
 
 
+
 </div>
 
 
 );
 
 
-}
+}   
